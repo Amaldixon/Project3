@@ -1,31 +1,14 @@
-![CI logo](https://codeinstitute.s3.amazonaws.com/fullstack/ci_logo_small.png)
+For Project 3 I chose to make a game of Battleships using Python. The Battleships game is played on grids on which each player's fleet of battleships is marked. The locations of the fleets are concealed from the other player. Players call shots at the other player's ships, and the objective of the game is to destroy the opposing player's fleet.
+The application provides a working battleship game for a single user to play against the computer.
 
-Welcome USER_NAME,
+The Simple Battleship Game(VS the computer) was built using only Python programming language. This application is a user-friendly kind of system that can easily fit your needs. The application provides you with a simple function that displays the actual gameplay of the game. The game is very simple you just need to locate and destroy your enemy ships. To win a game the player must guess the location of the ships randomly set by the computer, on a grid scaled from 1-9 and A-J for example typing in D6 will try and fire at the enemy's battleship an "x" will be marked if you miss and an "O" if it's a hit.
 
-This is the Code Institute student template for deploying your third portfolio project, the Python command-line project. The last update to this file was: **August 17, 2021**
+During this project, I had to use all the knowledge that I had learned during the Python part of the course. I started by creating a 10X10 grid to represent the game board Place two ships randomly on the board, one with length 3 and one with length 4. You can do this by randomly selecting a starting position and a direction for each ship (either horizontal or vertical) and then checking if the positions are valid (i.e., the ships do not overlap or go off the board).
 
-## Reminders
+Ask the user to input a coordinate to attack. Check if the coordinate is valid (i.e., it is within the bounds of the board and has not already been attacked), and then determine if it is a hit or a miss.
 
-* Your code must be placed in the `run.py` file
-* Your dependencies must be placed in the `requirements.txt` file
-* Do not edit any of the other files or your code may not deploy properly
+Update the game board with the result of the attack (e.g., mark a hit with an "X" and a miss with an "O").
 
-## Creating the Heroku app
+Repeat steps 3-4 until all of the ship segments have been hit (i.e., the game is over and the player has won) or the player has made a certain number of incorrect guesses (i.e., the game is over and the player has lost).
 
-When you create the app, you will need to add two buildpacks from the _Settings_ tab. The ordering is as follows:
-
-1. `heroku/python`
-2. `heroku/nodejs`
-
-You must then create a _Config Var_ called `PORT`. Set this to `8000`
-
-If you have credentials, such as in the Love Sandwiches project, you must create another _Config Var_ called `CREDS` and paste the JSON into the value field.
-
-Connect your GitHub repository and deploy as normal.
-
-## Constraints
-
-The deployment terminal is set to 80 columns by 24 rows. That means that each line of text needs to be 80 characters or less otherwise it will be wrapped onto a second line.
-
------
-Happy coding!
+I later made some adjustments to the code for example, instead of using a list of lists to represent the game board, I used a single list of length 100 and calculated the index of each coordinate using the formula 'row *10 + col' this made it easier to perform certain operations on the board. One of the issues that I faced in this project was when an incorrect input was made the program would crash such as; inputting "S11" Since that doesn't exist on the grid the program would just shut down. To fix this I integrated a try-except block in the 'play_game()' function to handle potential errors when parsing the user's input and when accessing the game board. Additionally, I added some code to check if the game is over(once all ships had been sunk) and to print a message when the game ends.
