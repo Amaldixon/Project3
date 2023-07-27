@@ -1,73 +1,85 @@
-#Random module for randomly accepting the values
-# ‘X’ indicates the ships hit
-# ‘-‘ indicates the hits missed
-from random import randint
+import random
 
-Hidden_Pattern=[[' ']*8 for x in range(8)]
-Guess_Pattern=[[' ']*8 for x in range(8)]
+# initialize the game board
+board = [' ' for _ in range(100)]
 
-let_to_num={'A':0,'B':1, 'C':2,'D':3,'E':4,'F':5,'G':6,'H':7}
+# map letters to column indices
+col_map = {'A': 0, 'B': 1, 'C': 2, 'D': 3, 'E': 4, 'F': 5, 'G': 6, 'H': 7, 'I': 8, 'J': 9}
 
-def print_board(board):
-    print(' A B C D E F G H')
-    print(' ***************')
-    row_num=1
-    for row in board:
-        print("%d|%s|" % (row_num, "|".join(row)))
-        row_num +=1
+# place the ships
+def place_ships():
+    for length in [3, 4]:
+        while True:
+            # randomly select a starting position and direction
+            row = random.randint(0, 9)
+            col = random.randint(0, 9)
+            direction = random.choice(['horizontal', 'vertical'])
+            if direction == 'horizontal' and col + length <= 10:
+                # check if the positions are valid
+                valid = True
+                for c in range(col, col + length):
+                    if board[row * 10 + c] != ' ':
+                        valid = False
+                        break
+                if valid:
+                    # place the ship on the board
+                    for c in range(col, col + length):
+                        board[row * 10 + c] = 'S'
+                    break
+            elif direction == 'vertical' and row + length <= 10:
+                # check if the positions are valid
+                valid = True
+                for r in range(row, row + length):
+                    if board[r * 10 + col] != ' ':
+                        valid = False
+                        break
+                if valid:
+                    # place the ship on the board
+                    for r in range(row, row + length):
+                        board[r * 10 + col] = 'S'
+                    break
 
-def get_ship_location():
-    #Enter the row number between 1 to 8
-    row=input('Please enter a ship row 1-8 ').upper()
-    while row not in '12345678':
-        print("Please enter a valid row ")
-        row=input('Please enter a ship row 1-8 ')
-    #Enter the Ship column from A TO H
-    column=input('Please enter a ship column A-H ').upper()
-    while column not in 'ABCDEFGH':
-        print("Please enter a valid column ")
-        column=input('Please enter a ship column A-H ')
-    return int(row)-1,let_to_num[column]
+# display the game board
+def display_board():
+    print('   A B C D E F G H I J')
+    for i in range(10):
+        print(f'{i}  {" ".join(board[i*10:i*10+10])}')
 
-#Function that creates the ships
-def create_ships(board):
-    for ship in range(5):
-        ship_r, ship_cl=randint(0,7), randint(0,7)
-        while board[ship_r][ship_cl] =='X':
-            ship_r, ship_cl = randint(0, 7), randint(0, 7)
-        board[ship_r][ship_cl] = 'X'
+# play the game
+def play_game():
+    place_ships()
+    display_board()
+    num_guesses = 0
+    attacked = set()
+    while True:
+        guess = input('Enter a coordinate to attack (e.g., A3): ')
+        if len(guess) != 2:
+            print('Invalid coordinate. Please try again.')
+            continue
+        col = col_map.get(guess[0].upper())
+        row = int(guess[1])
+        if col is None or row < 0 or row > 9:
+            print('Invalid coordinate. Please try again.')
+            continue
+        index = row * 10 + col
+        if index in attacked:
+            print('You already attacked that coordinate. Please try again.')
+            continue
+        attacked.add(index)
+        num_guesses += 1
+        try:
+            if board[index] == 'S':
+                board[index] = 'X'
+                print('Hit!')
+            else:
+                board[index] = 'O'
+                print('Miss!')
+        except IndexError:
+            print('An unexpected error occurred. Please try again.')
+        display_board()
 
-
-
-def count_hit_ships(board):
-    count=0
-    for row in board:
-        for column in row:
-            if column=='X':
-                count+=1
-    return count
-
-create_ships(Hidden_Pattern)
-#print_board(Hidden_Pattern)
-turns = 10
-while turns > 0:
-    print('Welcome to Battleship')
-    print_board(Guess_Pattern)
-    row,column =get_ship_location()
-    if Guess_Pattern[row][column] == '-':
-        print(' You already guessed that ')
-    elif Hidden_Pattern[row][column] =='X':
-        print(' Congratulations you have hit the battleship ')
-        Guess_Pattern[row][column] = 'X'
-        turns -= 1
-    else:
-        print('Sorry,You missed')
-        Guess_Pattern[row][column] = '-'
-        turns -= 1
-    if  count_hit_ships(Guess_Pattern) == 5:
-        print("Congratulations you have sunk all the battleships ")
-        break
-    print(' You have ' +str(turns) + ' turns remaining ')
-    if turns == 0:
-        print('Game Over ')
-        break
+        # check if the game is over
+        if 'S' not in board:
+            print('Congratulations! You sunk all the battleships!')
+            print('Number of guesses:', num_guesses)
+            break
